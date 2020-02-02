@@ -16,7 +16,7 @@ url='https://buildbot.net'
 license=(GPL2)
 checkdepends=(python-boto3 python-lz4 python-treq python-txrequests
               python-moto python-parameterized
-              openssh chromium)
+              openssh)
 makedepends=(python-twisted python-jinja python-zope-interface
              python-sqlalchemy-migrate python-dateutil python-txaio
              python-autobahn python-pyjwt python-yaml
@@ -109,12 +109,6 @@ check() {
 
   cd "$srcdir"/buildbot-$pkgver/worker
   PYTHONPATH=. trial3 buildbot_worker
-
-  for module in base waterfall_view console_view grid_view wsgi_dashboards
-  do
-    cd "$srcdir"/buildbot-$pkgver/www/$module
-    CHROME_BIN=/usr/bin/chromium yarn run test --browsers BBChromeHeadless
-  done
 }
 
 package_buildbot() {
