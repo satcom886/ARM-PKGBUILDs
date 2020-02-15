@@ -10,11 +10,11 @@
 #  - Removed the unnecessary Optix source
 #  - Enabled Cycles and ray optimisation
 #  - Disabled CUDA and Optix Cycles device support
+#  - Disabled Alembic
 #  - Tested building on ARMv6 (Pi 0 W) and ARMv7 (Odroid XU-4)
 #  - Enabled building for ARMv6 and ARMv7
 #  - Lowered number of building threads to 1 to stay below 500MB RAM usage
 #  - Applied patch for building on ARMv6 and ARMv7
-#  - This SHOULD build on ARMv6, but I couldn't test, because I keeep running out of RAM
 
 buildarch=28
 highmem=0
@@ -31,13 +31,13 @@ highmem=0
 # just build the package against them. I checked with NVIDIA and this way is
 # fine with them.
 
-_gittag=v2.81a
+_gittag=v2.82
 # _gitcommit=054dbb833e15275e0e991e2c15e754a3e7583716
 
 pkgname=blender
-pkgver=2.81.a
+pkgver=2.82
 [[ -n $_gitcommit ]] && pkgver=${pkgver}.git1.${_gitcommit:0:8}
-pkgrel=4.1
+pkgrel=1.1
 epoch=17
 pkgdesc="A fully integrated 3D graphics creation suite"
 arch=('x86_64')
@@ -45,7 +45,7 @@ license=('GPL')
 url="http://www.blender.org"
 depends=('libpng' 'libtiff' 'openexr' 'python' 'desktop-file-utils' 'python-requests'
          'shared-mime-info' 'hicolor-icon-theme' 'xdg-utils' 'glew' 'openjpeg' 'python-numpy'
-         'freetype2' 'openal' 'ffmpeg' 'fftw' 'boost-libs' 'opencollada' 'alembic'
+         'freetype2' 'openal' 'ffmpeg' 'fftw' 'boost-libs' 'opencollada'
          'openimageio' 'libsndfile' 'jack' 'opencolorio' 'openshadinglanguage'
          'jemalloc' 'libspnav' 'ptex' 'opensubdiv' 'openvdb' 'log4cplus' 'sdl2')
 makedepends=('cmake' 'boost' 'mesa' 'git' 'llvm' 'ninja')
@@ -53,9 +53,7 @@ options=(!strip)
 source=("git://git.blender.org/blender-addons.git"
         "git://git.blender.org/blender-addons-contrib.git"
         "git://git.blender.org/blender-translations.git"
-        "git://git.blender.org/blender-dev-tools.git"
-        "dna_gpencil_types.patch"
-        "dna_scene_types.patch")
+        "git://git.blender.org/blender-dev-tools.git")
 if [[ -n $_gittag ]]; then
     source+=("${pkgname}-${pkgver}::git://git.blender.org/blender.git#tag=${_gittag}")
 elif [[ -n $_gitcommit ]]; then
@@ -65,8 +63,6 @@ sha512sums=('SKIP'
             'SKIP'
             'SKIP'
             'SKIP'
-            '3f72497c41bda9acd0abd63c113f29d8d0c45978f5665d82fee7664727f8623eb1e7ebc4f5442cfe8e4a574ea6afe8eb30c8f7dfcf5666ba46fb2443d81c4d9a'
-            'c38cc98624be3d3e98005a8ef970f1566e71cc56f89ce7adc376a6737fb0c85ec14465c0e0c855b1e8a4e42c662feffb6d5c24f2f649b1be1a6ce0900a240d76'
             'SKIP')
 
 prepare() {
@@ -78,15 +74,6 @@ prepare() {
   git config submodule."release/datafiles/locale".url "${srcdir}/blender-translations"
   git config submodule."source/tools".url "${srcdir}/blender-dev-tools"
   git submodule update
-
-  if [[ $(uname -m) == armv7l ]] || [[ $(uname -m) == armv6l ]]
-  then
-    patch source/blender/makesdna/DNA_gpencil_types.h -i $srcdir/../dna_gpencil_types.patch
-    patch source/blender/makesdna/DNA_scene_types.h -i $srcdir/../dna_scene_types.patch
-  else
-    :
-  fi
-
   mkdir build
 }
 
