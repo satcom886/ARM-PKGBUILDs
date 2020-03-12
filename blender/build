@@ -40,11 +40,7 @@ sudo pacman -S --needed --asdeps libpng libtiff openexr python desktop-file-util
 cmake \
     -GNinja \
     -C../blender/build_files/cmake/config/blender_release.cmake ../blender \
-    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
-    -DDISTCC_HOSTS="10.0.0.2/9:3635 10.0.2.6/5:3635 10.0.2.7/5:3635" \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=. \
     -DWITH_INSTALL_PORTABLE=ON \
     -DPYTHON_VERSION=3.8 \
     -DPYTHON_LIBPATH=/usr/lib \
@@ -55,5 +51,7 @@ cmake \
     -DWITH_CYCLES_DEVICE_OPTIX=OFF \
     -DWITH_ALEMBIC=OFF
 
-ninja -j19
+#    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
+#    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
+ninja
 DESTDIR=~/blender-2.82 ninja install
