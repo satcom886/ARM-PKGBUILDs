@@ -1,0 +1,59 @@
+#!/bin/bash
+
+_gittag=v2.82
+# _gitcommit=054dbb833e15275e0e991e2c15e754a3e7583716
+
+mkdir blender-git
+cd blender-git
+
+git clone https://git.blender.org/blender.git
+cd blender
+if [[ -n $_gittag ]]; then
+    git checkout ${_gittag}
+elif [[ -n $_gitcommit ]]; then
+    git checkout ${_gitcommit}
+fi
+cd ..
+git clone https://git.blender.org/blender-addons.git
+git clone https://git.blender.org/blender-addons-contrib.git
+git clone https://git.blender.org/blender-translations.git
+git clone https://git.blender.org/blender-dev-tools.git
+
+cd blender
+git submodule init
+git config submodule."release/scripts/addons".url "blender-addons"
+git config submodule."release/scripts/addons_contrib".url "blender-addons-contrib"
+git config submodule."release/datafiles/locale".url "blender-translations"
+git config submodule."source/tools".url "blender-dev-tools"
+git submodule update
+cd ..
+mkdir build
+cd build
+
+#./blender/build_files/build_environment/install_deps.sh
+sudo pacman -S --needed --asdeps libpng libtiff openexr python desktop-file-utils python-requests \
+        shared-mime-info hicolor-icon-theme xdg-utils glew openjpeg python-numpy freetype2 \
+        openal ffmpeg fftw boost-libs opencollada openimageio libsndfile jack opencolorio \
+        openshadinglanguage jemalloc libspnav ptex opensubdiv openvdb log4cplus sdl2 \
+        cmake boost mesa git llvm ninja nasm jasm
+
+cmake \
+    -GNinja \
+    -C../blender/build_files/cmake/config/blender_release.cmake ../blender \
+    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
+    -DDISTCC_HOSTS="10.0.0.2/9:3635 10.0.2.6/5:3635 10.0.2.7/5:3635" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=. \
+    -DWITH_INSTALL_PORTABLE=ON \
+    -DPYTHON_VERSION=3.8 \
+    -DPYTHON_LIBPATH=/usr/lib \
+    -DPYTHON_LIBRARY=python3.8 \
+    -DPYTHON_INCLUDE_DIR=/usr/include/python3.8 \
+    -DWITH_CYCLES=ON \
+    -DWITH_CYCLES_DEVICE_CUDA=OFF \
+    -DWITH_CYCLES_DEVICE_OPTIX=OFF \
+    -DWITH_ALEMBIC=OFF
+
+ninja -j19
+DESTDIR=~/blender-2.82 ninja install
