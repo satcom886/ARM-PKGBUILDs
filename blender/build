@@ -36,8 +36,6 @@ sudo pacman -S --needed --asdeps libpng libtiff openexr python desktop-file-util
 cmake \
     -GNinja \
     -C../build_files/cmake/config/blender_release.cmake .. \
-    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INSTALL_PORTABLE=ON \
     -DPYTHON_VERSION=3.8 \
@@ -48,6 +46,9 @@ cmake \
     -DWITH_CYCLES_DEVICE_CUDA=OFF \
     -DWITH_CYCLES_DEVICE_OPTIX=OFF \
     -DWITH_ALEMBIC=OFF
+
+#    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
+#    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
 
 ninja
 DESTDIR=~/blender-2.82 ninja install
