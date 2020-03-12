@@ -3,9 +3,6 @@
 _gittag=v2.82
 # _gitcommit=054dbb833e15275e0e991e2c15e754a3e7583716
 
-mkdir blender-git
-cd blender-git
-
 git clone https://git.blender.org/blender.git
 cd blender
 if [[ -n $_gittag ]]; then
@@ -13,20 +10,19 @@ if [[ -n $_gittag ]]; then
 elif [[ -n $_gitcommit ]]; then
     git checkout ${_gitcommit}
 fi
-cd ..
+
 git clone https://git.blender.org/blender-addons.git
 git clone https://git.blender.org/blender-addons-contrib.git
 git clone https://git.blender.org/blender-translations.git
 git clone https://git.blender.org/blender-dev-tools.git
 
-cd blender
 git submodule init
 git config submodule."release/scripts/addons".url "blender-addons"
 git config submodule."release/scripts/addons_contrib".url "blender-addons-contrib"
 git config submodule."release/datafiles/locale".url "blender-translations"
 git config submodule."source/tools".url "blender-dev-tools"
 git submodule update
-cd ..
+
 mkdir build
 cd build
 
@@ -39,7 +35,9 @@ sudo pacman -S --needed --asdeps libpng libtiff openexr python desktop-file-util
 
 cmake \
     -GNinja \
-    -C../blender/build_files/cmake/config/blender_release.cmake ../blender \
+    -C../build_files/cmake/config/blender_release.cmake .. \
+    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INSTALL_PORTABLE=ON \
     -DPYTHON_VERSION=3.8 \
@@ -51,7 +49,5 @@ cmake \
     -DWITH_CYCLES_DEVICE_OPTIX=OFF \
     -DWITH_ALEMBIC=OFF
 
-#    -DCMAKE_C_COMPILER_LAUNCHER=distcc \
-#    -DCMAKE_CXX_COMPILER_LAUNCHER=distcc \
 ninja
 DESTDIR=~/blender-2.82 ninja install
