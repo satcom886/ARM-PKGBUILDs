@@ -1,4 +1,4 @@
-# Maintainer: Sven-Hendrik Haase <svenstaro@gmail.com>
+https://olegtown.pw/Public/ArchLinuxArm# Maintainer: Sven-Hendrik Haase <svenstaro@gmail.com>
 # Contributor: John Sowiak <john@archlinux.org>
 # Contributor: tobias <tobias@archlinux.org>
 
@@ -35,7 +35,7 @@ _gittag=v2.82a
 # _gitcommit=054dbb833e15275e0e991e2c15e754a3e7583716
 
 pkgname=blender
-pkgver=2.82
+pkgver=2.82a
 [[ -n $_gitcommit ]] && pkgver=${pkgver}.git1.${_gitcommit:0:8}
 pkgrel=1.1
 epoch=17
